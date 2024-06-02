@@ -21,6 +21,8 @@ def train_one_epoch(train_dataloader, model, optimizer, loss):
     """
 
     if torch.cuda.is_available():
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
         model = model.cuda()
 
     model.train()
@@ -36,6 +38,8 @@ def train_one_epoch(train_dataloader, model, optimizer, loss):
     ):
         # move data to GPU
         if torch.cuda.is_available():
+            torch.backends.cuda.matmul.allow_tf32 = True
+            torch.backends.cudnn.allow_tf32 = True
             data, target = data.cuda(), target.cuda()
 
         # 1. clear the gradients of all optimized variables
@@ -71,6 +75,8 @@ def valid_one_epoch(valid_dataloader, model, loss):
         model.eval()
 
         if torch.cuda.is_available():
+            torch.backends.cuda.matmul.allow_tf32 = True
+            torch.backends.cudnn.allow_tf32 = True
             model.cuda()
 
         valid_loss = 0.0
@@ -83,6 +89,8 @@ def valid_one_epoch(valid_dataloader, model, loss):
         ):
             # move data to GPU
             if torch.cuda.is_available():
+                torch.backends.cuda.matmul.allow_tf32 = True
+                torch.backends.cudnn.allow_tf32 = True
                 data, target = data.cuda(), target.cuda()
 
             # 1. forward pass: compute predicted outputs by passing inputs to the model
@@ -168,6 +176,8 @@ def one_epoch_test(test_dataloader, model, loss):
         model.eval()
 
         if torch.cuda.is_available():
+            torch.backends.cuda.matmul.allow_tf32 = True
+            torch.backends.cudnn.allow_tf32 = True
             model = model.cuda()
 
         for batch_idx, (data, target) in tqdm(
@@ -179,6 +189,8 @@ def one_epoch_test(test_dataloader, model, loss):
         ):
             # move data to GPU
             if torch.cuda.is_available():
+                torch.backends.cuda.matmul.allow_tf32 = True
+                torch.backends.cudnn.allow_tf32 = True
                 data, target = data.cuda(), target.cuda()
 
             # 1. forward pass: compute predicted outputs by passing inputs to the model
