@@ -114,6 +114,24 @@ def get_data_loaders(
     return data_loaders
 
 
+def plot_confusion_matrix(pred, truth):
+    import pandas as pd
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    gt = pd.Series(truth, name='Ground Truth')
+    predicted = pd.Series(pred, name='Predicted')
+
+    confusion_matrix = pd.crosstab(gt, predicted)
+
+    fig, sub = plt.subplots(figsize=(14, 12))
+    with sns.plotting_context("notebook"):
+        idx = (confusion_matrix == 0)
+        confusion_matrix[idx] = np.nan
+        sns.heatmap(confusion_matrix, annot=True, ax=sub, linewidths=0.5, linecolor='lightgray', cbar=False)
+
+
 def compute_mean_and_std():
     """
     Compute per-channel mean and std of the dataset (to be used in transforms.Normalize())
