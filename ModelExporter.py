@@ -28,17 +28,16 @@ scripted_predictor.save("checkpoints/transfer_exported.pt")
 
 # Generate mobile optimized predictor
 model_transfer.eval()
-example = torch.rand(1, 3, 224, 224)
-traced_script_module = torch.jit.trace(model_transfer, example)
+traced_script_module = torch.jit.script(model_transfer)
 optimized_traced_model = optimize_for_mobile(traced_script_module)
-optimized_traced_model._save_for_lite_interpreter("checkpoints/model_mobile.pt")
+optimized_traced_model._save_for_lite_interpreter("checkpoints/model_mobile.pt", _use_flatbuffer=True)
 
 # Print all labels to txt file
 labels = []
 for dir in os.listdir("landmark_images/train"):
     labels.append(dir)
 labels.sort()
-with open("checkpoints/labels.txt", "w") as f:
+with open("checkpoints/labels.csv", "w") as f:
     for label in labels:
         splitted = label.split(".")
-        f.write(splitted[1] + "\n")
+        f.write(splitted[1] + ",")
