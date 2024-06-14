@@ -9,12 +9,12 @@ from torch.utils.mobile_optimizer import optimize_for_mobile
 # First let's get the class names from our data loaders
 class_names = get_data_loaders()["train"].dataset.classes
 
-model_transfer = get_model_transfer_learning(model_name="resnet152", n_classes=50)
+model_transfer = get_model_transfer_learning(model_name="resnet50", n_classes=20)
 model_transfer = model_transfer.cpu()
 # Let's make sure we use the right weights by loading the
 # best weights we have found during training
 model_transfer.load_state_dict(
-    torch.load("checkpoints/model_transfer152.pt", map_location="cpu")
+    torch.load("checkpoints/model_transfer50.pt", map_location="cpu")
 )
 
 # Wrap with predictor
@@ -24,13 +24,13 @@ predictor = Predictor(model_transfer, class_names, mean, std).cpu()
 # Export using torch.jit.script
 scripted_predictor = torch.jit.script(predictor)
 # Generate normal predictor
-scripted_predictor.save("checkpoints/transfer_exported.pt")
+scripted_predictor._save_for_lite_interpreter("checkpoints/transfer_exported50.pt", _use_flatbuffer=True)
 
 # Generate mobile optimized predictor
 model_transfer.eval()
 traced_script_module = torch.jit.script(model_transfer)
 optimized_traced_model = optimize_for_mobile(traced_script_module)
-optimized_traced_model._save_for_lite_interpreter("checkpoints/model_mobile.pt", _use_flatbuffer=True)
+optimized_traced_model._save_for_lite_interpreter("checkpoints/model_mobile_gr.pt")
 
 # Print all labels to txt file
 labels = []
